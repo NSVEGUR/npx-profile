@@ -1,6 +1,9 @@
 {
   "name": "@nsvegur/profile",
   "version": "0.0.14",
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "Node Package Executable for Nagasai Vegur's Profile",
   "bin": {
     "nsvegur": "nsvegur.js"
