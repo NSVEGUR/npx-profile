@@ -2,76 +2,104 @@
 "use strict";
 
 import c from "chalk";
-import img from "terminal-image";
-import got from "got";
 import ww from "word-wrap";
 import iq from "inquirer";
-import opn from "open";
+import open from "open";
 
-got("https://nsvegur.me/profile.jpg", {
-  responseType: "buffer",
-})
-  .then(function (image) {
-    return img.buffer(image.body, { width: "33%" });
-  })
-  .then(function (image) {
-    console.log(image);
-    console.log(
-      ww(
-        `
-Hey, this is ${c.blue.bold("Nagasai Vegur")}👻!
+function gradientText(text, startColor, endColor) {
+  const lines = text.split("\n");
 
-${c.hex("#D35870").bold("Could I Be More ME?")}
+  const interpolate = (start, end, factor) =>
+    Math.round(start + (end - start) * factor);
 
-I'm a ${c.bgBlue.white.bold(
-          "software developer"
-        )} and Computer enthusiast experimenting with interfaces in web who's passionate about ${c.bgBlue.white.bold(
-          "Data"
-        )}.
+  const parseHex = (hex) =>
+    hex.replace("#", "").match(/.{1,2}/g).map((x) => parseInt(x, 16));
 
-An innovative individual with zeal for learning something new who enjoys trying out new technologies while listening to ${c
-          .hex("#956FE1")
-          .bold("13 exclamations")}!
+  const [r1, g1, b1] = parseHex(startColor);
+  const [r2, g2, b2] = parseHex(endColor);
 
+  return lines
+    .map((line, i) => {
+      const factor = i / lines.length;
+      const r = interpolate(r1, r2, factor);
+      const g = interpolate(g1, g2, factor);
+      const b = interpolate(b1, b2, factor);
+      return c.rgb(r, g, b)(line);
+    })
+    .join("\n");
+}
 
-I love ${c.hex("#CCDF65").bold("JavaScript")} and ${c
-          .hex("#CCDF65")
-          .bold("CPP")}.
+// ASCII portrait generated from image.png
+const ASCII_ART = `
+;;;;;;;;;;;;+++;::::::::::;+*+;:;;;;;;;++++++;;+*?*+++;;;++*
+;;;;;;;;;;;;+++;::::::;*%SSS#SSSSS%?+;::::::::::+**+;;;;+++*
+++;;;;+;;;;;+*++;;;;?S#@@@@##@@@@@@@S?;:,,,,,,,:;*++;;::;;++
++++++++++++++*+;:::?@@@@@@@@@@@#@@@@###+.,,,,,,,;*+;:::::;;+
+++++++;;:::;;;:,,.,#@@@@#%???*++*?S####*,,,,,,,:;*+;;;;;;;;+
+:::::;;:::::;;:,...S@@#%?*++;;;;+**S@@S:.......,:*+;;:::::;+
+,,,,:::::::::;:,...+@S?%%%%?*+**???%@#:.........:+;:,,:::,:;
+,,,,,:::,,,,:::,...:#??%%%%%?*%SSS%?S+ ........,:+:..,,,...,
+,,,,,::,,,,,,::,...,%%*++***++**+**?*..........,:+:,,:;:,,:;
+,,,,,::,,,,,,::,....+%??%#SS%%%%%**%:..........,:+;:::;;;;;;
+,,,,,::,,,,,,::,,,,,.?%?%S%***?%S%%+........,,,,:++++++++;;;
+,,,,,::,,,,,,::,,,,.,*#S%????**??%;......,,,,,,,:++++++++;;+
+::;;;;;;:::,:::,...;%;%#@#S%%%S##*;,,.......,,,,:++;;;;;;;;+
+*****+++;;;;:;;+*?S#@+,*%#@####%;,S#%%?*;;:,,...:;;;:::;;;;+
+*****+;:;+**?%S#@@@###:,,:;*??:..:S#######SS%?*+++;::::::;;;
+*++;+**?%S###########@%,,:*%SS%*,:################%;:;;;;;;+
+**+%##################@+,;%###?;::S################%+++++++*
+%%%####################S,..*##*..,S#################?+++++**
+#SS####################@?,,?#S#*.,S##################*****??
+#SS######@###############;,?#SSS,,S##################S****?%
+SS########@##############%,?#SSS+,S###################%**??*
+*%########@@##############;*#SSS?,%#############@######*++++
+*S@#######@@@#############%+#SSSS,?@############@######%++;; 
++S@########@@@########@####*SSSS#;*@###########@@@######****
++S@########@@@@########@###SS#SS#**@#########@@@@#######%++*
++S@#######@@@@@@@@@##@##@########%*@##@######@@@@@@#####S+++
++S@##@@@@@##@@@@@@@@@@@#@@##@####S?###@@####@@@@@@@@@@@##?++
+`.trim();
+
+console.log("\n\n");
+console.log(gradientText(ASCII_ART, "#EF4444", "#cc9494"));
+console.log("\n\n");
+console.log(
+  ww(
+    `
+Howdy 🖖🏻, this is ${c.hex("#EF4444").bold("Nagasai Vegur")}!
+
+I'm an ${c.bgHex("#cc9494").black.bold(
+      "AI & ML Engineer"
+    )} experimenting intelligent systems that merge analytical rigor with creative design. An innovative individual with zeal for learning something new who enjoys trying out new technologies while listening to ${c
+      .hex("#EF4444")
+      .bold("13 exclamations")}!
 
 `.trim(),
-        { width: 200, trim: true }
-      )
-    );
+    { width: process.stdout.columns || 80, trim: true }
+  )
+);
 
-    console.log("\n\n");
-    iq.prompt([
+console.log("\n\n");
+iq.prompt([
+  {
+    type: "list",
+    message: "Navigate me?",
+    name: "open",
+    choices: [
       {
-        type: "list",
-        message: "Navigate me?",
-        name: "open",
-        choices: [
-          {
-            name: c.gray(`💻  What am I cooking? (${c.bold("GitHub")})`),
-            value: "https://github.com/NSVEGUR",
-          },
-          {
-            name: c.cyan(`🐦  More Me? (${c.bold("Portfolio Site")})`),
-            value: "https://nsvegur.me/",
-          },
-          {
-            name: c.blue(`🏹  What describes me? (${c.bold("Resume")})`),
-            value: "https://nsvegur.me/resume",
-          },
-          { name: c.red("👋  Nope. Bye.\n"), value: false },
-        ],
+        name: c.hex("#58d77e")(`💻  What am I cooking? (${c.bold("GitHub")})`),
+        value: "https://github.com/NSVEGUR",
       },
-    ])
-      .then(function (a) {
-        opn(a.open);
-        process.exit();
-      })
-      .catch(function () {});
+      {
+        name: c.hex("#cc9494")(`🐦  More Me? (${c.bold("Portfolio Site")})`),
+        value: "https://nsvegur.me/",
+      },
+      { name: c.hex("#EF4444")("👋  Nope. Bye.\n"), value: false },
+    ],
+  },
+])
+  .then(function (a) {
+    open(a.open);
+    process.exit();
   })
-  .catch(function (e) {
-    console.log(e);
-  });
+  .catch(function () {});
