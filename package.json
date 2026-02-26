@@ -1,6 +1,6 @@
 {
   "name": "@nsvegur/profile",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "publishConfig": {
     "access": "public"
   },
@@ -27,6 +27,7 @@
     "got": "^13.0.0",
     "inquirer": "^9.2.11",
     "open": "^9.1.0",
+    "strip-ansi": "^7.2.0",
     "terminal-image": "^2.0.0",
     "terminal-link": "^3.0.0",
     "word-wrap": "^1.2.5"
